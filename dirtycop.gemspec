@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'dirty/cop/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "dirty-cop"
+  spec.name          = "dirtycop"
   spec.version       = Dirty::Cop::VERSION
   spec.authors       = ["Adam Hess"]
   spec.email         = ["adamhess1991@gmail.com"]

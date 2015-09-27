@@ -92,7 +92,7 @@ module DirtyCop
   private
 
   def report_offense_at?(file, line)
-    !@line_filter || @line_filter.fetch(file)[line]
+    !@line_filter || @line_filter.fetch(file)[line] if @line_filter[file]
   end
 
   def files_modified_since(ref)

@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.dirname(File.realpath(__FILE__)) + '/../lib')
+$LOAD_PATH.unshift(File.dirname(File.realpath(__FILE__)) + '/../lib/dirty')
 require 'rubocop'
 require 'benchmark'
+
 
 changed_files = `git diff --name-only | grep \.rb$`.split("\n") # list of changed ruby files
 
@@ -10,7 +12,7 @@ cli = RuboCop::CLI.new
 result = 0
 
 time = Benchmark.realtime do
-  my_args = ARGV + changed_files
+  my_args = ["--require", "cop"] + ARGV + changed_files
   result = cli.run(my_args)
 end
 

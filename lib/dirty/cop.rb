@@ -57,10 +57,9 @@ module DirtyCop
   end
 
   def process_bribe
-    eat_a_donut if ARGV.empty?
     only_changed_lines = true
 
-    # I am specifying the ref instead of getting it from args since
+    # I am specifying the ref above instead of getting it from args since
     # getting it from args seems to be broken
     # ref = nil
     # loop do

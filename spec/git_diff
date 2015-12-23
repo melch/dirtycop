@@ -1,0 +1,19 @@
+[1mdiff --git a/app/models/submittal_package.rb b/app/models/submittal_package.rb[m
+[1mindex 9ec391b..b39fff7 100755[m
+[1m--- a/app/models/submittal_package.rb[m
+[1m+++ b/app/models/submittal_package.rb[m
+[36m@@ -4 +4 @@[m
+[31m-#[m
+[32m+[m[32m# foo[m
+[36m@@ -6,4 +6,4 @@[m
+[31m-#  project_id                            :integer[m
+[31m-#  specification_section_id              :integer[m
+[31m-#  created_at                            :datetime[m
+[31m-#  deleted_at                            :datetime[m
+[32m+[m[32m#  project_id                            :integer foo[m
+[32m+[m[32m#  specification_section_id              :integer foo[m
+[32m+[m[32m#  created_at                            :datetime foo[m
+[32m+[m[32m#  deleted_at                            :datetime foo[m
+[36m@@ -12 +12 @@[m
+[31m-#  created_by_id                         :integer[m
+[32m+[m[32m#  created_by_id                         :integer foo[m

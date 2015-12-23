@@ -38,6 +38,7 @@
 #   unmodified code if they are reported in modified lines.
 
 require 'rubocop'
+require 'pry'
 
 module DirtyCop
   extend self # In your face, style guide!
@@ -88,10 +89,11 @@ module DirtyCop
     cover_up_unmodified ref, only_changed_lines
   end
 
-  private
-
   def report_offense_at?(file, line)
-    !@line_filter || @line_filter.fetch(file)[line] if @line_filter[file]
+    return unless @line_filter
+    return unless @line_filter[file]
+
+    @line_filter[file].include? line
   end
 
   def files_modified_since(ref)
@@ -114,21 +116,29 @@ module DirtyCop
   end
 
   def lines_modified_since(file, ref)
-    ranges =
-      `git diff -p -U0 #{ref} #{file}`
-      .lines
-      .grep(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/) { Regexp.last_match[1].to_i..(Regexp.last_match[1].to_i + Regexp.last_match[2].to_i) }
-      .reverse
+    git_diff = `git diff -p -U0 #{ref} #{file}`
+    mask_array(git_diff)
+  end
 
-    mask = Array.new(ranges.first.end)
+  def mask_array(git_diff)
+    ranges = git_diff
+      .each_line
+      .grep(/@@ -(\d+)(?:,)?(\d+)? \+(\d+)(?:,)?(\d+)? @@/) {
+        [
+          Regexp.last_match[3].to_i,
+          (Regexp.last_match[4] || 1).to_i
+        ]
+      }.reverse
 
-    ranges.each do |range|
-      range.each do |line|
-        mask[line] = true
+    mask = Set.new
+
+    ranges.each do |changed_line_number, number_of_changed_lines|
+      number_of_changed_lines.times do |line_delta|
+        mask << changed_line_number + line_delta
       end
     end
 
-    mask
+    mask.to_a
   end
 
   def eat_a_donut

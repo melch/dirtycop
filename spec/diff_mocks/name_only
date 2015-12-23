@@ -1,0 +1,2 @@
+lib/dirty/cop.rb
+spec/dirty/cop_spec.rb

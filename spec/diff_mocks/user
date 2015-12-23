@@ -1,0 +1,12 @@
+[1mdiff --git a/spec/models/submittal_log_spec.rb b/spec/models/submittal_log_spec.rb[m
+[1mindex f9c743f..de36350 100755[m
+[1m--- a/spec/models/submittal_log_spec.rb[m
+[1m+++ b/spec/models/submittal_log_spec.rb[m
+[36m@@ -2,2 +2,2 @@[m [mrequire 'rails_helper'[m
+[31m-require 'shared_examples_for_location_name_setter'[m
+[31m-[m
+[32m+[m[32mrequire 'shared_examples_for_location_name_setter' bar[m
+[32m+[m[32m bar[m
+[36m@@ -6 +6 @@[m [mRSpec.describe SubmittalLog, type: :model do[m
+[31m-  let(:project) { FactoryGirl.create(:project, time_zone: "Pacific Time (US & Canada)") }[m
+[32m+[m[32m  let(:project) { FactoryGirl.create(:project, time_zone: "Pacific Time (US & Canada)") } bar[m

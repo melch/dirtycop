@@ -48,13 +48,16 @@ module DirtyCop
     !report_offense_at?(file, line)
   end
 
-  def uncovered_targets
-    @files
+  def ref
+    'HEAD'
+  end
+
+  def files_to_inspect(args)
+    @files = (args.empty? ? changed_files(ref) : args)
   end
 
   def cover_up_unmodified(ref, only_changed_lines = true)
-    @files ||= files_modified_since(ref)
-    @line_filter ||= build_line_filter(@files, ref) if only_changed_lines
+    @line_filter ||= changed_files_and_lines(ref) if only_changed_lines
   end
 
   def process_bribe
@@ -84,8 +87,6 @@ module DirtyCop
     # end
     # return unless ref
 
-    ref = 'HEAD'
-
     cover_up_unmodified ref, only_changed_lines
   end
 
@@ -96,32 +97,37 @@ module DirtyCop
     @line_filter[file].include? line
   end
 
-  def files_modified_since(ref)
-    `git diff --diff-filter=AM --name-only #{ref}`
+  def changed_files(ref)
+    git_diff_name_only
       .lines
       .map(&:chomp)
       .grep(/\.rb$/)
       .map { |file| File.absolute_path(file) }
   end
 
-  def build_line_filter(_files, ref)
+  def git_diff_name_only
+    `git diff --diff-filter=AM --name-only #{ref}`
+  end
+
+  def changed_files_and_lines(ref)
+    @files ||= changed_files(ref)
+
     result = {}
 
-    suspects = files_modified_since(ref)
+    suspects = changed_files(ref)
     suspects.each do |file|
-      result[file] = lines_modified_since(file, ref)
+      result[file] = changed_lines(file, ref)
     end
 
     result
   end
 
-  def lines_modified_since(file, ref)
-    git_diff = `git diff -p -U0 #{ref} #{file}`
-    mask_array(git_diff)
+  def git_diff(file, ref)
+    `git diff -p -U0 #{ref} #{file}`
   end
 
-  def mask_array(git_diff)
-    ranges = git_diff
+  def changed_lines(file, ref)
+    ranges = git_diff(file, ref)
       .each_line
       .grep(/@@ -(\d+)(?:,)?(\d+)? \+(\d+)(?:,)?(\d+)? @@/) {
         [
@@ -154,10 +160,7 @@ module RuboCop
     alias_method :find_unpatched, :find
 
     def find(args)
-      replacement = DirtyCop.uncovered_targets
-      return replacement if replacement
-
-      find_unpatched(args)
+      DirtyCop.files_to_inspect(args)
     end
   end
 

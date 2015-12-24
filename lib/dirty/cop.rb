@@ -38,13 +38,12 @@
 #   unmodified code if they are reported in modified lines.
 
 require 'rubocop'
-require 'pry'
+# require 'pry'
 
 module DirtyCop
   extend self # In your face, style guide!
 
   def bury_evidence?(file, line)
-    process_bribe
     !report_offense_at?(file, line)
   end
 
@@ -63,6 +62,8 @@ module DirtyCop
   end
 
   def process_bribe
+    # leaving this unused method as a placeholder of flags that purportedly work
+    # (potential feature set)
     only_changed_lines = true
 
     # I am specifying the ref above instead of getting it from args since
@@ -93,14 +94,15 @@ module DirtyCop
   end
 
   def report_offense_at?(file, line)
-    return unless @line_filter
-    return unless @line_filter[file]
+    changed_lines_for_file(file).include? line
+  end
 
-    @line_filter[file].include? line
+  def changed_lines_for_file(file)
+    changed_files_and_lines(ref)[file] || []
   end
 
   def changed_files(ref)
-    git_diff_name_only
+    @changed_files ||= git_diff_name_only
       .lines
       .map(&:chomp)
       .grep(/\.rb$/)
@@ -112,12 +114,9 @@ module DirtyCop
   end
 
   def changed_files_and_lines(ref)
-    @files ||= changed_files(ref)
-
     result = {}
 
-    suspects = changed_files(ref)
-    suspects.each do |file|
+    changed_files(ref).each do |file|
       result[file] = changed_lines(file, ref)
     end
 

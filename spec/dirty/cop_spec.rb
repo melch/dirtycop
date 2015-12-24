@@ -67,15 +67,39 @@ describe DirtyCop do
     it 'should only respond with offenses on lines that were changed'
   end
 
-  # TODO:
-  # describe '#changed_files_and_lines' do
-  #   it 'should return a hash where keys are filenames and values are an array of line numbers that changed' do
-  #     expected = {
-  #       "company" => [4, 6, 7, 8, 9, 12],
-  #       "user" => [2, 4, 5]
-  #     }
-  #     result = RubocopTest.new.changed_files_and_lines(ref)
-  #     expect(result.sort).to eq(expected)
-  #   end
-  # end
+  describe '#report_offense_at?' do
+    it 'should respond if a line was changed at past file and line' do
+      changed_files_and_lines = {
+        'company' => [4, 6, 7, 8, 9, 12],
+        'user' => [2, 3, 6]
+      }
+      rubocop.stub(:changed_files_and_lines) { changed_files_and_lines }
+      expect(rubocop.report_offense_at?('company', 6)).to be_truthy
+      expect(rubocop.report_offense_at?('company', 1)).to be_falsy
+      expect(rubocop.report_offense_at?('other_file', 6)).to be_falsy
+    end
+
+    it 'should not blow up if no files were changed' do
+      changed_files_and_lines = {}
+      rubocop.stub(:changed_files_and_lines) { changed_files_and_lines }
+      expect(rubocop.report_offense_at?('company', 1)).to be_falsy
+    end
+  end
+
+  describe '#changed_files_and_lines' do
+    it 'should return a hash with filenames and changed lines' do
+      rubocop.stub(:changed_files) { %w(company user) }
+      rubocop.stub(:git_diff).with('company', 'HEAD') { File.open('spec/diff_mocks/company') }
+      rubocop.stub(:git_diff).with('user', 'HEAD') { File.open('spec/diff_mocks/user') }
+      expected = {
+        'company' => [4, 6, 7, 8, 9, 12],
+        'user' => [2, 3, 6]
+      }
+      result = rubocop.changed_files_and_lines(ref)
+      expect(result.keys).to eq(expected.keys)
+      result.keys.each do |key|
+        expect(result[key].sort).to eq(expected[key].sort)
+      end
+    end
+  end
 end

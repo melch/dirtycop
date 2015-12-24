@@ -52,8 +52,10 @@ module DirtyCop
     'HEAD'
   end
 
-  def files_to_inspect(args)
-    @files = (args.empty? ? changed_files(ref) : args)
+  def files_to_inspect(whitelisted_files, args)
+    return @files ||= args unless args.empty?
+
+    @files ||= (changed_files(ref) & whitelisted_files)
   end
 
   def cover_up_unmodified(ref, only_changed_lines = true)
@@ -160,7 +162,7 @@ module RuboCop
     alias_method :find_unpatched, :find
 
     def find(args)
-      DirtyCop.files_to_inspect(args)
+      DirtyCop.files_to_inspect(find_unpatched(args), args)
     end
   end
 

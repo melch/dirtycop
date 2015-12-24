@@ -14,18 +14,29 @@ describe DirtyCop do
     context 'files passed in' do
       it 'returns files passed into rubocop that have changes' do
         files = ['company', 'user']
-        result = rubocop.files_to_inspect(files)
+        rubocop_allowed_files = ['dont_care']
+        result = rubocop.files_to_inspect(rubocop_allowed_files, files)
         expect(result).to eq(files)
       end
     end
 
     context 'no files passed in' do
       it 'returns all files that have changes' do
-        files = ['company', 'user']
-        rubocop.stub(:changed_files) { files }
+        changed_files = ['company', 'user']
+        rubocop_allowed_files = changed_files
+        rubocop.stub(:changed_files) { changed_files }
 
-        result = rubocop.files_to_inspect([])
-        expect(result).to eq(files)
+        result = rubocop.files_to_inspect(rubocop_allowed_files, [])
+        expect(result).to eq(changed_files)
+      end
+
+      it 'returns files that have changes that are okayed by rubocop' do
+        changed_files = ['company', 'user', 'project']
+        rubocop_allowed_files = ['app', 'company', 'user']
+        rubocop.stub(:changed_files) { changed_files }
+
+        result = rubocop.files_to_inspect(rubocop_allowed_files, [])
+        expect(result).to eq(['company', 'user'])
       end
     end
   end

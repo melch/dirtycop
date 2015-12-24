@@ -63,10 +63,6 @@ describe DirtyCop do
     end
   end
 
-  describe '#inspect_file' do
-    it 'should only respond with offenses on lines that were changed'
-  end
-
   describe '#report_offense_at?' do
     it 'should respond if a line was changed at past file and line' do
       changed_files_and_lines = {

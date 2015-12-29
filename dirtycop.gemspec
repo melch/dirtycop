@@ -6,7 +6,7 @@ require 'dirty/cop/version'
 Gem::Specification.new do |spec|
   spec.name          = "dirtycop"
   spec.version       = Dirty::Cop::VERSION
-  spec.authors       = ["Adam Hess"]
+  spec.authors       = ["Adam Hess", 'Melch']
   spec.email         = ["adamhess1991@gmail.com"]
   spec.summary       = %q{Corrupt cop that avoids unchanged violations}
   spec.description   = %q{Takes your current diff as the input for rubocop}

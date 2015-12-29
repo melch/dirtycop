@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dirtycop (0.0.3)
+    dirtycop (0.0.4)
       rubocop
 
 GEM
@@ -30,3 +30,6 @@ DEPENDENCIES
   bundler (~> 1.7)
   dirtycop!
   rake (~> 10.0)
+
+BUNDLED WITH
+   1.10.6
